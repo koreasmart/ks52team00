@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ksmybatis.common.mapper.CommonMapper">
+	
+	<resultMap type="CommonGroupCode" id="commonGroupCodeMap">
+		<id 	column="comm_group_cd" 			property="groupCode"/>
+		<result column="comm_group_nm" 			property="groupName"/>
+		<result column="comm_group_eng_nm" 		property="groupEngName"/>
+		<result column="comm_group_reg_date" 	property="groupCodeRegDate"/>
+		
+		<!-- collection : 1:N관계 매핑 -->
+		<collection property="commCodeList" ofType="CommonCode">
+			<id column="comm_group_cd" 			property="groupCode"/>
+			<id column="comm_cd" 				property="commCode"/>
+			
+			<result column="comm_nm" 			property="commName"/>
+			<result column="comm_eng_nm" 		property="commEngName"/>
+			<result column="comm_cd_use_yn" 	property="commCodeUseYN"/>
+			<result column="comm_cd_reg_date" 	property="commCodeRegDate"/>
+		</collection>
+	</resultMap>
+
+	<select id="getPrimaryKey" parameterType="string">
+		/* 자동증가코드 생성 */
+		SELECT
+			CASE
+			WHEN COUNT(*) = 0 THEN CONCAT(#{codePattern}, 1)
+			ELSE
+				CONCAT(#{codePattern}, MAX(CAST(SUBSTRING_INDEX(${columnName}, #{codePattern}, -1) AS UNSIGNED))+1)
+			END AS newCode
+		FROM
+			${tableName};
+		
+	</select>
+
+	<select id="getCommGroupCode" resultMap="commonGroupCodeMap" parameterType="string">
+		/* 그룹코드조회 */
+		SELECT 
+			cgc.comm_group_cd,
+			cgc.comm_group_nm,	
+			cc.comm_cd,
+			cc.comm_nm
+		FROM 
+			comm_code cc INNER JOIN comm_group_code cgc
+			ON cc.comm_group_cd = cgc.comm_group_cd
+		WHERE 
+			cgc.comm_group_nm = #{groupName};
+	</select>
+
+</mapper>
+
+
+
+
+
+
+

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ksmybatis.manage.vendors.mapper.VendorsMapper">
+	
+	
+	<resultMap type="Vendor" id="vendorMap">
+		<id 	column="vend_cd" 		property="vendorCode"/>
+		<result column="vend_mbr_id" 	property="vendorMemberId"/>
+		<result column="vend_brno" 		property="vendorBrno"/>
+		<result column="vend_name" 		property="vendorName"/>
+		<result column="vend_addr" 		property="vendorAddr"/>
+		<result column="vend_daddr" 	property="vendorDaddr"/>
+		<result column="vend_zip" 		property="vendorZip"/>
+		<result column="vend_telno" 	property="vendorTelNo"/>
+	</resultMap>
+	
+	<sql id="vendorInfoByAll">
+		vend_cd, 
+		vend_mbr_id, 
+		vend_brno, 
+		vend_name, 
+		vend_addr, 
+		vend_daddr, 
+		vend_zip, 
+		vend_telno
+	</sql>
+	<sql id="vendorInfoBySome">
+		vend_cd, 
+		vend_name 
+	</sql>
+	
+	<select id="getVendorInfoByParam" parameterType="String" resultMap="vendorMap">
+		/* 판매처 정보 조회(some: 판매처코드, 판매처명 | all: 전체) */
+		SELECT
+			<choose>
+				<when test="param != null and param == 'all'">
+					<include refid="vendorInfoByAll"></include>
+				</when>
+				<otherwise>
+					<include refid="vendorInfoBySome"></include> 
+				</otherwise>
+			</choose> 
+		FROM 
+			vendors;
+	</select>
+	
+	
+	<delete id="removeVendorsById" parameterType="string">
+		/* 판매자가 등록한 판매처 삭제 */
+		DELETE
+		FROM
+			vendors 
+		WHERE
+			vend_mbr_id = #{sellerId};
+	</delete>
+	
+
+</mapper>
+
+
+
+
+
+
+

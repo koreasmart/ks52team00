@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ksmybatis.login.mapper.LoginMapper">
+
+	<select id="getLoginHistoryCount" resultType="int">
+		/* 로그인 전체 이력 행의 갯수 */
+		SELECT
+			COUNT(*)
+		FROM
+			members_login_log;
+	</select>
+	
+	<select id="getLoginHistoryList" parameterType="ksmybatis.page.Pageable" resultType="map">
+		/* 로그인 이력조회 */
+		SELECT
+			mll.login_no 	AS loginNo, 
+			mll.login_id 	AS loginId, 
+			m.mbr_name 		AS memberName,
+			m.mbr_email 	AS memberEmail,
+			mll.login_ip 	AS loginIP, 
+			mll.login_date 	AS loginDate
+		FROM
+			members_login_log mll INNER JOIN members m
+			ON mll.login_id = m.mbr_id
+		ORDER BY mll.login_no
+		LIMIT #{rowPerPage} OFFSET #{offset};
+	</select>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+

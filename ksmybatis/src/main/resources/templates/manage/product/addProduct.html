@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  layout:decorate="~{manage/layout/default}">
+
+	<th:block layout:fragment="customJs">
+		<script>
+			$('#addProductBtn').click(function(){
+				let isSubmit = true;
+				const formEles = $('#addProductForm input, #addProductForm select'); 
+				formEles.each((idx, item)=>{
+					const id = item.id;
+					const value = $(item).val();
+					if(!value){
+						const cate = $(`label[for="${id}"]`).text();
+						const msg = `${cate} 필수 입력항목입니다.`;
+						alert(msg);
+						$(item).focus();
+						isSubmit = false;
+						return false;
+					}
+				})
+				if(isSubmit) $('#addProductForm').submit();
+			});	
+		</script>
+	</th:block>
+
+	<th:block layout:fragment="customContent">
+		
+        <!-- Content Row -->
+        <div class="row">
+        	<!-- content -->
+			<div class="col-xl-10 col-lg-10">
+				<div class="card shadow mb-4">
+				    <!-- Card Header - Dropdown -->
+					<div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+					    <h6 class="m-0 font-weight-bold text-primary" th:text="${title}">페이지 이름</h6>
+					</div>
+					<!-- Card Body -->
+				    <div class="card-body">
+				       <div class="p-3">
+							<div class="text-center">
+							    <h1 class="h4 text-gray-900 mb-4" th:text="${title}">소제목</h1>
+							</div>
+                            <form class="user" th:action="@{/product/addProduct}" method="post" id="addProductForm">
+                                <div class="form-group">
+                                	<label for="vendorCode">판매처</label>
+                                    <select id="vendorCode" name="vendorCode" class="form-control text-center" >
+                                    	<option value="">===== 판매처를 선택해주세요 =====</option>
+                                    	<th:block th:if="${sellerList != null}">
+                                    		<option th:each="l : ${sellerList}" 
+                                    				th:value="${l.vendorCode}"
+                                    				th:text="|${l.vendorCode} :::::::: ${l.vendorName}|"></option>
+                                    	</th:block>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                	<label for="productName">상품명</label>
+                                    <input type="text" class="form-control" id="productName" name="productName" placeholder="상품명" >
+                                </div>
+                                <div class="form-group">
+                                	<label for="productUntprc">상품단가</label>
+                                    <input type="number" class="form-control" id="productUntprc" name="productUntprc" placeholder="상품단가">
+                                </div>
+                                <button type="button" id="addProductBtn" class="btn btn-primary btn-user btn-block">
+                                    상품등록
+                                </button>
+                            </form>
+                        </div>
+				    </div>
+				</div>
+			</div>
+        </div>
+	
+	</th:block>
+</html>

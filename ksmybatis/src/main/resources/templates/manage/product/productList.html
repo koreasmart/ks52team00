@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  layout:decorate="~{manage/layout/default}">
+	  
+	<th:block layout:fragment="customJs">
+		<script>
+			$('#searchBtn').click(function(){
+				const priceInput = $('#priceSearch input').not('input[type="text"]');
+				priceInput.each((idx, item)=>{
+					const price = Number($(item).val());
+					if(!price || price < 0){
+						$(item).val($(item).data('price'));
+					}
+				});
+				const minPrice = Number(priceInput.eq(0).val());
+				const maxPrice = Number(priceInput.eq(1).val());
+				if(minPrice >= maxPrice){
+					priceInput.eq(0).val(maxPrice);
+					priceInput.eq(1).val(minPrice);
+					if(minPrice == maxPrice) 
+						priceInput.eq(1).val(priceInput.eq(1).data('price'));
+				}
+				
+				const request = $.ajax({
+					url : '/product/searchPrice',
+					method : 'post',
+					data : { 
+							'minPrice': priceInput.eq(0).val(),
+							'maxPrice': priceInput.eq(1).val()
+					},
+					dataType: 'json'
+				});
+				request.done(function(data){
+					
+					const searchList = data;
+					
+					$('#productTbody').empty();
+					
+					$(searchList).each(function(idx, item){
+						
+						const productInfo = {
+							productCode : item.productCode,
+							vendorCode : item.vendorCode,
+							vendorName : item.vendor.vendorName,
+							vendorTelNo : item.vendor.vendorTelNo,
+							productName : item.productName,
+							productUntprc : item.productUntprc,
+							productRegDate : item.productRegDate
+						}
+						const $tr = $('<tr />');
+						for(const key in productInfo){
+							const $td = $('<td />').text(productInfo[key]);
+							$tr.append($td);
+						}
+						$tr.append(								
+							$('<td />').append(
+									$('<a />', {'href' : `/product/modifyProduct?productCode=${productInfo.productCode}`}).text('수정')
+							),
+							$('<td />').append(
+									$('<a />', {'href' : `/product/removeProduct?productCode=${productInfo.productCode}`}).text('삭제')
+							)
+						);
+						$('#productTbody').append($tr);
+					});	
+					
+					
+				});
+				request.fail(function(jqXHR, textStatus, error){
+					console.log(error);
+				});
+				
+			});
+		</script>
+	</th:block>
+
+	<th:block layout:fragment="customContent">
+		
+        <!-- Content Row -->
+        <div class="row">
+        	<!-- content -->
+			<div class="col-xl-12 col-lg-12">
+				<div class="card shadow mb-4">
+				    <!-- Card Header - Dropdown -->
+					<div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+					    <h6 class="m-0 font-weight-bold text-primary">페이지 이름</h6>
+					</div>
+					<!-- Card Body -->
+				    <div class="card-body">
+				        <div class="p-3">
+				        	<!-- th:insert => th:insert의 속성을 가진 태그의 자식요소로 조각을 붙인다. -->
+				        	<div id="priceSearch" th:insert="~{manage/product/search/search :: searchFragment}"></div>
+							<table class="table table-striped table-hover mt-4">
+								<thead class="bg-gradient-primary text-white">
+									<tr>
+										<th>상품코드</th>
+										<th>판매처코드</th>
+										<th>판매처이름</th>
+										<th>판매처연락처</th>
+										<th>상품명</th>
+										<th>상품가격</th>
+										<th>상품등록일자</th>
+										<th>수정</th>
+										<th>삭제</th>
+									</tr>
+								</thead>
+								<tbody id="productTbody">
+									<tr th:unless="${#lists.isEmpty(productList)}"
+										th:each="l : ${productList}"
+										th:object="${l.vendor}">
+										<td th:text="${l.productCode}"></td>
+										<td th:text="*{vendorCode}"></td>
+										<td th:text="*{vendorName}"></td>
+										<td th:text="*{vendorTelNo}"></td>
+										<td th:text="${l.productName}"></td>
+										<td th:text="${l.productUntprc}"></td>
+										<td th:text="${l.productRegDate}"></td>
+										<td>
+											<a th:href="@{#}">수정</a>
+										</td>
+										<td>
+											<a th:href="@{#}">삭제</a>
+										</td>
+									</tr>
+									<tr th:if="${#lists.isEmpty(productList)}">
+										<td class="text-center" colspan="9">등록된 상품의 정보가 없습니다.</td>
+									</tr>
+								</tbody>
+							</table>
+                        </div>
+				    </div>
+				</div>
+			</div>
+        </div>
+	
+	</th:block>
+</html>
+
+
+
+
+
+

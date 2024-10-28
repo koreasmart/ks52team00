@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ksmybatis.files.mapper.FileMapper">
+
+	<resultMap type="ksmybatis.files.dto.FileDto" id="fileResultMap">
+		<id 	column="file_idx" 			property="fileIdx"/>
+		<result column="file_new_name" 		property="fileNewName"/>
+		<result column="file_original_name" property="fileOriginalName"/>
+		<result column="file_path" 			property="filePath"/>
+		<result column="file_size" 			property="fileSize"/>
+		<result column="file_reg_date" 		property="fileRegDate"/>
+	</resultMap>
+	
+	<delete id="removeFileByIdx" parameterType="string">
+		DELETE
+		FROM 
+			files
+		WHERE 
+			file_idx = #{fileIdx};
+	</delete>
+	
+	<select id="getFileInfoByIdx" parameterType="string" resultMap="fileResultMap">
+		/* 파일 조회 */
+		SELECT 
+			file_idx, 
+			file_original_name, 
+			file_new_name, 
+			file_path, 
+			file_size, 
+			file_reg_date
+		FROM 
+			files
+		WHERE
+			file_idx = #{fileIdx};
+	</select>
+
+	<select id="getFileList" resultMap="fileResultMap">
+		/* 파일리스트 조회 */
+		SELECT 
+			file_idx, 
+			file_original_name, 
+			file_new_name, 
+			file_path, 
+			file_size, 
+			file_reg_date
+		FROM 
+			files;
+	</select>
+
+	<insert id="addFile" parameterType="ksmybatis.files.dto.FileDto">
+		/* 단일 파일 정보 등록 */
+		INSERT INTO files
+		(file_idx, file_original_name, file_new_name, file_path, file_size, file_reg_date)
+		VALUES 
+		(#{fileIdx}, #{fileOriginalName}, #{fileNewName}, #{filePath}, #{fileSize}, NOW())
+	</insert>
+	<insert id="addFiles" parameterType="ksmybatis.files.dto.FileDto">
+		/* 다중 파일 정보 등록 */
+		INSERT INTO files
+		(file_idx, file_original_name, file_new_name, file_path, file_size, file_reg_date)
+		VALUES 
+		<foreach collection="list" item="file" separator=",">		
+			(#{file.fileIdx}, #{file.fileOriginalName}, #{file.fileNewName}, #{file.filePath}, #{file.fileSize}, NOW())
+		</foreach>
+	</insert>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+

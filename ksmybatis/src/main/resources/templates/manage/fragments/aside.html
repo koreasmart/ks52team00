@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar" th:fragment="asideFragment">
+
+            <!-- Sidebar - Brand -->
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+                <div class="sidebar-brand-icon rotate-n-15">
+                    <i class="fas fa-laugh-wink"></i>
+                </div>
+                <div class="sidebar-brand-text mx-3">ksmart <sup>mybatis</sup></div>
+            </a>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider my-0">
+
+            <!-- Nav Item - Dashboard -->
+            <li class="nav-item active">
+                <a class="nav-link" href="/">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>메인화면으로</span>
+                </a>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider">
+
+            <!-- Heading -->
+            <div class="sidebar-heading">
+                관리메뉴
+            </div>
+
+            <!-- Nav Item - Pages Collapse Menu -->
+            <li class="nav-item" th:if="${session.SID ne null and session.SGRD eq 'mbr_grd_1'}">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseOne"
+                    aria-expanded="true" aria-controls="collapseTwo">
+                    <i class="fas fa-fw fa-cog"></i>
+                    <span>회원관리</span>
+                </a>
+                <div id="collapseOne" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">회원관리:</h6>
+                        <a class="collapse-item" th:href="@{/member/memberList}">회원조회</a>
+                        <a class="collapse-item" th:href="@{/member/addMember}">회원가입</a>
+                        <a class="collapse-item" th:href="@{/loginHistory}">로그인이력조회</a>
+                    </div>
+                </div>
+            </li>
+            
+            <!-- Nav Item - Pages Collapse Menu -->
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
+                    aria-expanded="true" aria-controls="collapseTwo">
+                    <i class="fas fa-fw fa-cog"></i>
+                    <span>상품관리</span>
+                </a>
+                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">상품관리:</h6>
+                        <a class="collapse-item" th:href="@{/product/productList}">상품조회</a>
+                        <a class="collapse-item" th:href="@{/product/addProduct}">상품등록</a>
+                    </div>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseThree"
+                    aria-expanded="true" aria-controls="collapseThree">
+                    <i class="fas fa-fw fa-cog"></i>
+                    <span>파일관리</span>
+                </a>
+                <div id="collapseThree" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">파일관리:</h6>
+                        <a class="collapse-item" th:href="@{/filedownloadView}">파일목록</a>
+                        <a class="collapse-item" th:href="@{/fileupload}">파일등록</a>
+                    </div>
+                </div>
+            </li>
+        </ul>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

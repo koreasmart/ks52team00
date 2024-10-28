@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  layout:decorate="~{manage/layout/default}">
+
+	<th:block layout:fragment="customJs">
+		<script>
+			$('#memberId').change(function(){
+				$('#addMemberForm input').not('#memberId').prop('disabled', true);
+				$('#addMemberForm select').prop('disabled', true);
+				$('#addMemberForm button').not('#idCheckBtn').prop('disabled', true);	
+			});
+		
+			$('#idCheckBtn').click(function(){
+
+				const memberId = $('#memberId').val();
+				
+				if(!memberId) {
+					alert('회원의 아이디를 입력해주세요');
+					$('#memberId').focus();
+					return;
+				}
+				
+				const request = $.ajax({
+					url : "/member/idCheck",
+					method : 'POST',
+					data : { 'memberId' : memberId},
+					dataType : 'json'
+				});
+				request.done(function(data){
+					console.log(typeof data);
+					if(data){
+						alert('가입된 회원입니다.');
+						$('#memberId').val('');
+						$('#memberId').focus();
+						return ;
+					}
+					$('#addMemberForm input').prop('disabled', data);
+					$('#addMemberForm select').prop('disabled', data);
+					$('#addMemberForm button').prop('disabled', data);
+
+				});
+				request.fail(function(jqXHR, textStatus, error){
+					console.log(error);
+				});	
+				
+			});		
+			
+			$('#addMemberBtn').click(function(){
+				let isSubmit = true;
+				const $formControl = $('#addMemberForm input, #addMemberForm select');
+				
+				$formControl.each((index, item)=>{
+					const value = $(item).val();
+					if(!value){
+						const cate = $(item).attr('placeholder');
+						const msg = `${cate} 필수 입력항목입니다.`;
+						alert(msg);
+						$(item).focus();
+						isSubmit = false;
+						return false;
+					}
+				});
+				
+				if(isSubmit) $('#addMemberForm').submit();
+			});
+		</script>
+	</th:block>
+
+	<th:block layout:fragment="customContent">
+		
+        <!-- Content Row -->
+        <div class="row">
+        	<!-- content -->
+			<div class="col-xl-10 col-lg-10">
+				<div class="card shadow mb-4">
+				    <!-- Card Header - Dropdown -->
+					<div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+					    <h6 class="m-0 font-weight-bold text-primary" th:text="${title}">페이지 이름</h6>
+					</div>
+					<!-- Card Body -->
+				    <div class="card-body">
+				       <div class="p-3">
+							<div class="text-center">
+							    <h1 class="h4 text-gray-900 mb-4" th:text="${title}">소제목</h1>
+							</div>
+                            <form class="user" th:action="@{/member/addMember}" method="post" id="addMemberForm">
+                                <div class="form-group row">
+                                    <div class="col-sm-4 mb-4 mb-sm-0">
+                                    	<label for="memberId">아이디</label>
+                                        <input type="text" class="form-control" id="memberId" name="memberId" placeholder="회원아이디">
+                                    </div>
+                                    <div class="col-sm-2 mb-4 mb-sm-0">
+                                    	<label></label>
+                                    	<button type="button" id="idCheckBtn" class="btn btn-primary col-12 mt-2">중복체크</button>
+                                    </div>
+                                    <div class="col-sm-6">
+                                    	<label for="memberPw">비밀번호</label>
+                                        <input type="text" class="form-control" id="memberPw" name="memberPw" placeholder="회원비밀번호" disabled="disabled">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                	<label for="memberName">이름</label>
+                                    <input type="text" class="form-control" id="memberName" name="memberName" placeholder="회원이름"  disabled="disabled">
+                                </div>
+                                <div class="form-group">
+                                	<label for="memberGrade">등급</label>
+                                    <select id="memberGrade" name="memberGrade" class="form-control text-center"  disabled="disabled">
+                                    	<option value="">===== 등급을 선택해주세요 =====</option>
+                                    	<th:block th:if="${grade != null}">
+                                    		<option th:each="gl : ${grade.commCodeList}" 
+                                    				th:value="${gl.commCode}"
+                                    				th:text="${gl.commName}"></option>
+                                    	</th:block>
+                                    </select>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-6 mb-3 mb-sm-0">
+                                    	<label for="memberAddr">주소</label>
+                                        <input type="text" class="form-control" id="memberAddr" name="memberAddr" placeholder="회원주소"  disabled="disabled">
+                                    </div>
+                                    <div class="col-sm-6">
+                                    	<label for="memberDaddr">상세주소</label>
+                                        <input type="text" class="form-control" id="memberDaddr" name="memberDaddr" placeholder="회원상세주소"  disabled="disabled">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                	<label for="memberZip">우편번호</label>
+                                    <input type="number" class="form-control" id="memberZip" name="memberZip" placeholder="회원우편번호"  disabled="disabled">
+                                </div>
+                                <div class="form-group">
+                                	<label for="memberTelNo">연락처</label>
+                                    <input type="text" class="form-control" id="memberTelNo" name="memberTelNo" placeholder="회원연락처"  disabled="disabled">
+                                </div>
+                                <div class="form-group">
+                                	<label for="memberEmail">이메일</label>
+                                    <input type="text" class="form-control" id="memberEmail" name="memberEmail" placeholder="회원이메일"  disabled="disabled">
+                                </div>
+                                
+                                <button type="button" id="addMemberBtn" class="btn btn-primary btn-user btn-block"  disabled="disabled">
+                                    회원가입
+                                </button>
+                            </form>
+                        </div>
+				    </div>
+				</div>
+			</div>
+        </div>
+	
+	</th:block>
+</html>

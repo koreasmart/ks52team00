@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ksmybatis.manage.member.mapper.MemberMapper">
+	
+	<resultMap type="MemberGrade" id="memberGradeMap">
+		<id 	column="comm_cd" 		property="gradeCode"/>
+		<result column="comm_nm" 		property="gradeName"/>
+		<result column="comm_group_cd" 	property="groupCode"/>
+		<result column="comm_group_nm" 	property="groupName"/>
+	</resultMap>
+	
+	<resultMap type="Member" id="memberMap">
+		<id 	column="mbr_id" 		property="memberId"/>
+		<result column="mbr_pw" 		property="memberPw"/>
+		<result column="mbr_name" 		property="memberName"/>
+		<result column="mbr_grd" 		property="memberGrade"/>
+		<result column="mbr_addr" 		property="memberAddr"/>
+		<result column="mbr_daddr" 		property="memberDaddr"/>
+		<result column="mbr_zip" 		property="memberZip"/>
+		<result column="mbr_telno" 		property="memberTelNo"/>
+		<result column="mbr_email" 		property="memberEmail"/>
+		<result column="mbr_reg_date" 	property="memberRegDate"/>
+	</resultMap>
+		
+	<delete id="removeMemberById" parameterType="string">
+		/* 특정회원 탈퇴 */
+		DELETE
+		FROM
+			members
+		WHERE 
+			mbr_id = #{memberId};
+	</delete>
+	
+	<delete id="removeMemberLoginLogById" parameterType="string">
+		/* 특정회원의 로그인 이력삭제 */
+		DELETE
+		FROM
+			members_login_log 
+		WHERE
+			login_id = #{memberId};
+	</delete>
+	
+	<update id="modifyMember" parameterType="Member">
+		/* 회원수정 */
+		UPDATE members
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="memberPw != null and memberPw != ''">
+				mbr_pw = #{memberPw},
+			</if>
+			<if test="memberName != null and memberName != ''">
+				mbr_name = #{memberName},
+			</if>
+			<if test="memberGrade != null and memberGrade != ''">
+				mbr_grd = #{memberGrade},
+			</if>
+			<if test="memberAddr != null and memberAddr != ''">
+				mbr_addr = #{memberAddr},
+			</if>
+			<if test="memberDaddr != null and memberDaddr != ''">
+				mbr_daddr = #{memberDaddr},
+			</if>
+			<if test="memberZip >= 1000">
+				mbr_zip = #{memberZip},
+			</if>
+			<if test="memberTelNo != null and memberTelNo != ''">
+				mbr_telno = #{memberTelNo},
+			</if>
+			<if test="memberEmail != null and memberEmail != ''">
+				mbr_email = #{memberEmail},
+			</if>
+		</trim>
+		WHERE 
+			mbr_id = #{memberId};
+		
+	</update>
+	
+	<select id="getMemberInfoById" parameterType="string" resultMap="memberMap">
+		/* 특정회원 조회 */
+		SELECT 
+			mbr_id, 
+			mbr_pw, 
+			mbr_name, 
+			mbr_grd, 
+			mbr_addr, 
+			mbr_daddr, 
+			mbr_zip, 
+			mbr_telno, 
+			mbr_email, 
+			mbr_reg_date
+		FROM 
+			members
+		WHERE
+			mbr_id = #{memberId};
+	</select>
+	
+	<insert id="addMember" parameterType="Member">
+		/* 회원가입 */
+		INSERT INTO members
+		(mbr_id, mbr_pw, mbr_name, mbr_grd, mbr_addr, mbr_daddr, mbr_zip, mbr_telno, mbr_email, mbr_reg_date)
+		VALUES 
+		(#{memberId}, #{memberPw}, #{memberName}, #{memberGrade}, #{memberAddr}, #{memberDaddr}, #{memberZip}, 
+		 #{memberTelNo}, #{memberEmail}, CURDATE());
+	
+	</insert>
+
+	<select id="memberCheckById" parameterType="string" resultType="boolean">
+		/* 아이디 중복체크 */
+		SELECT
+			COUNT(mbr_id)
+		FROM
+			members
+		WHERE 
+			mbr_id = #{memberId};
+	</select>
+
+	<select id="getGradeList" resultMap="memberGradeMap">
+		/* 회원등급조회 */
+		SELECT 
+			cgc.comm_group_cd,
+			cgc.comm_group_nm,	
+			cc.comm_cd,
+			cc.comm_nm
+		FROM 
+			comm_code cc INNER JOIN comm_group_code cgc
+			ON cc.comm_group_cd = cgc.comm_group_cd
+		WHERE 
+			cgc.comm_group_nm = '회원등급';
+	</select>
+
+	<select id="getMemberList" resultType="Member">
+		/* 회원목록조회 */
+		SELECT 
+			mbr_id  		AS memberId, 
+			mbr_pw  		AS memberPw, 
+			mbr_name  		AS memberName, 
+			mbr_grd  		AS memberGrade, 
+			mbr_addr  		AS memberAddr, 
+			mbr_daddr  		AS memberDaddr, 
+			mbr_zip  		AS memberZip, 
+			mbr_telno  		AS memberTelNo, 
+			mbr_email  		AS memberEmail, 
+			mbr_reg_date   	AS memberRegDate
+		FROM 
+			members
+		ORDER BY CAST(SUBSTRING_INDEX(mbr_id, 'ksmartid', -1) AS UNSIGNED);
+	</select>
+</mapper>
+
+
+
+
+
+
+
